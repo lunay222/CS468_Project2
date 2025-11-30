@@ -27,8 +27,8 @@ docker-compose ps
 ### 2. Pull Ollama Model
 
 ```bash
-# Pull the llama3 model (first time only, may take several minutes)
-docker exec study-coach-ollama ollama pull llama3
+# Pull the llama3.2:1b model (first time only, may take several minutes)
+docker exec study-coach-ollama ollama pull llama3.2:1b
 
 # Verify model is available
 docker exec study-coach-ollama ollama list
@@ -66,20 +66,29 @@ expo start
 ### 5. Connect Mobile Device
 
 1. **Find your computer's IP address**:
-   - Windows: `ipconfig` (look for IPv4 address)
-   - Mac/Linux: `ifconfig` or `ip addr`
+   - Windows: `ipconfig` (look for IPv4 address under WiFi adapter, not 127.0.0.1)
+   - Mac/Linux: `ifconfig` or `ip addr` (look for 192.168.x.x or 10.0.0.x)
 
 2. **Update API URL in mobile app**:
-   - Edit `mobile-app/services/api.js`
-   - Change `API_BASE_URL` to your computer's IP:
-     ```javascript
-     const API_BASE_URL = 'http://YOUR_IP_ADDRESS:8000';
-     ```
+   - Edit `mobile-app/services/api.js` - Change `DEFAULT_API_BASE_URL` to your IP
+   - Edit `mobile-app/App.js` - Change `DEFAULT_API_URL` to your IP
+   - Example: `http://192.168.1.100:8000` (replace with your actual IP)
 
-3. **Connect device**:
+3. **Install Expo Go on your phone**:
+   - iOS: [Download from App Store](https://apps.apple.com/app/expo-go/id982107779)
+   - Android: [Download from Google Play](https://play.google.com/store/apps/details?id=host.exp.exponent)
+
+4. **Connect device**:
    - Ensure phone and computer are on the same WiFi network
-   - Scan QR code from Expo or enter URL manually
-   - App should connect to backend
+   - Start Expo: `cd mobile-app && npm start`
+   - Scan QR code from terminal or browser (http://localhost:19000)
+   - iOS: Use Camera app to scan QR code
+   - Android: Open Expo Go app → Tap "Scan QR Code"
+   - If QR code doesn't appear, try: `npx expo start --tunnel`
+
+5. **Test connection**:
+   - From phone browser, go to: `http://YOUR_IP:8000/`
+   - Should see: `{"message":"Study Coach API Gateway is running","status":"healthy"}`
 
 ## Detailed Setup
 
@@ -120,6 +129,25 @@ docker-compose down
 # Stop and remove volumes (clears Ollama models)
 docker-compose down -v
 ```
+
+### Restarting Services
+
+```bash
+# Start backend services
+docker-compose up -d
+
+# Verify services are running
+docker-compose ps
+
+# Test the API
+curl http://localhost:8000/health
+
+# Start mobile app (in mobile-app directory)
+cd mobile-app
+npm start 
+```
+
+**Note**: Docker containers persist data (Ollama models are saved in volumes). Expo needs to be restarted each time.
 
 ## Testing the System
 
@@ -186,7 +214,7 @@ docker-compose restart
 docker exec study-coach-ollama ollama list
 
 # Pull model if missing
-docker exec study-coach-ollama ollama pull llama3
+docker exec study-coach-ollama ollama pull llama3.2:1b
 
 # Try alternative model
 docker exec study-coach-ollama ollama pull mistral
@@ -196,12 +224,15 @@ docker exec study-coach-ollama ollama pull mistral
 ### Mobile App Can't Connect
 
 1. **Check IP address**:
-   - Ensure mobile app has correct IP
-   - Verify computer and phone are on same network
+   - Ensure mobile app has correct IP in both `mobile-app/services/api.js` and `mobile-app/App.js`
+   - Verify computer and phone are on same WiFi network
+   - Disable VPN if active
+   - Run `ipconfig` (Windows) or `ifconfig` (Mac/Linux) to verify IP
 
 2. **Check firewall**:
    - Allow port 8000 through firewall
-   - Windows: Check Windows Firewall settings
+   - Windows: Settings → Firewall → Allow an app → Find Python/FastAPI → Enable
+   - Or create inbound rule for port 8000 (TCP)
    - Mac/Linux: Check firewall rules
 
 3. **Test connection**:
@@ -209,6 +240,18 @@ docker exec study-coach-ollama ollama pull mistral
    # From phone browser, try:
    http://YOUR_IP:8000/health
    ```
+   Should return: `{"status":"healthy","services":{...}}`
+
+4. **Expo connection issues**:
+   - Make sure `npm start` is running in mobile-app directory
+   - Try: `npx expo start --tunnel` (uses Expo's servers)
+   - Check if port 19000 is available: `netstat -ano | findstr :19000` (Windows)
+   - Open browser to `http://localhost:19000` to see QR code in Expo DevTools
+   - If QR code doesn't appear, try: `npx expo start --clear`
+
+5. **Camera/Microphone permissions**:
+   - iOS: Settings → Privacy → Camera → Expo Go → Enable
+   - Android: Settings → Apps → Expo Go → Permissions → Enable Camera
 
 ### OCR Not Working
 
@@ -234,7 +277,7 @@ docker exec study-coach-ollama ollama list
 
 # Test Ollama directly
 curl http://localhost:11434/api/generate -d '{
-  "model": "llama3",
+  "model": "llama3.2:1b",
   "prompt": "Hello",
   "stream": false
 }'
@@ -250,7 +293,7 @@ Edit `docker-compose.yml` to change:
 environment:
   - OCR_SERVICE_URL=http://ocr-service:8001
   - LLM_SERVICE_URL=http://ollama:11434
-  - OLLAMA_MODEL=llama3  # Change model here
+  - OLLAMA_MODEL=llama3.2:1b  # Change model here
   - TTS_ENABLED=true
 ```
 
@@ -305,10 +348,10 @@ For production:
 
 ## Next Steps
 
+- Read `README.md` for project overview
 - Read `DESIGN.md` for architecture details
 - Read `AI_CODE_DOCUMENTATION.md` for AI code details
 - Read `tests/TESTING_WALKTHROUGH.md` for testing guide
-- Review `QUICK_START.md` for mobile app setup
 
 ## Support
 
