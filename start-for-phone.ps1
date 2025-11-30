@@ -58,11 +58,11 @@ Start-Sleep -Seconds 10
 Write-Host ""
 Write-Host "🧠 Checking Ollama model..." -ForegroundColor Yellow
 $modelCheck = docker exec study-coach-ollama ollama list 2>$null
-if ($modelCheck -match "llama3") {
-    Write-Host "✅ llama3 model is available" -ForegroundColor Green
+if ($modelCheck -match "llama3.2:1b") {
+    Write-Host "✅ llama3.2:1b model is available" -ForegroundColor Green
 } else {
-    Write-Host "📥 Pulling llama3 model (this may take a few minutes)..." -ForegroundColor Yellow
-    docker exec study-coach-ollama ollama pull llama3
+    Write-Host "📥 Pulling llama3.2:1b model (this may take a few minutes)..." -ForegroundColor Yellow
+    docker exec study-coach-ollama ollama pull llama3.2:1b
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ Model pulled successfully" -ForegroundColor Green
     } else {
@@ -140,6 +140,6 @@ Write-Host "   Should show API health message" -ForegroundColor Gray
 Write-Host ""
 Write-Host "🔧 Backend URL: http://$mainIP:8000" -ForegroundColor Green
 Write-Host ""
-Write-Host "For detailed instructions, see: PHONE_SETUP.md" -ForegroundColor Yellow
+Write-Host "For detailed instructions, see: SETUP_AND_RUN.md" -ForegroundColor Yellow
 Write-Host ""
 
