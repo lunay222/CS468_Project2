@@ -36,8 +36,8 @@ if ($ollamaRunning) {
     Write-Host "✅ Ollama container is running" -ForegroundColor Green
     
     # Pull the model if not already present
-    Write-Host "📥 Pulling Ollama model (llama3)..." -ForegroundColor Yellow
-    docker exec study-coach-ollama ollama pull llama3
+    Write-Host "📥 Pulling Ollama model (llama3.2:1b)..." -ForegroundColor Yellow
+    docker exec study-coach-ollama ollama pull llama3.2:1b
     
     Write-Host "✅ Model pulled successfully" -ForegroundColor Green
 } else {
