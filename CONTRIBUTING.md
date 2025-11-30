@@ -2,6 +2,30 @@
 
 Thank you for your interest in contributing to the Study Coach project!
 
+## Initial Git Setup (First Time Only)
+
+If you're setting up the repository for the first time:
+
+```bash
+# Initialize git (if not already done)
+git init
+
+# Add all files
+git add .
+
+# Create initial commit
+git commit -m "Initial commit: AI Context-Aware Study Coach"
+
+# Add remote repository (replace YOUR_USERNAME with your GitHub username)
+git remote add origin https://github.com/YOUR_USERNAME/studyCoach.git
+
+# Push to GitHub
+git branch -M main
+git push -u origin main
+```
+
+**Note**: If asked for credentials, use a Personal Access Token (not your password). Generate one at: GitHub → Settings → Developer settings → Personal access tokens.
+
 ## Development Setup
 
 1. **Fork and Clone**
